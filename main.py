@@ -14,6 +14,20 @@ WHERE `text` LIKE '%wine%'
 """
 
 
+def make_range_gen(iterable):
+    l = sorted(iterable)
+
+    # Now get the starts and ends of those
+    # https://stackoverflow.com/a/10420670/2958070
+    def make_inclusive_range(g):
+        l = list(g)
+        return l[0], l[-1]
+
+    index_range_gen = (make_inclusive_range(g) for _, g in
+                       groupby(l, key=lambda n, c=count(): n - next(c)))
+    return index_range_gen
+
+
 def main():
     connection = pymysql.connect(host='localhost',
                                  user='root',
@@ -26,32 +40,10 @@ def main():
     with contextlib.closing(connection):
         with connection.cursor() as cursor:
             cursor.execute(SQL_VERSES)
-            for result in cursor.fetchall():
-                index_set.add(*result)
+            for (index, ) in cursor.fetchall():
+                index_set.update(range(index - 3, index + 2))
 
-    # get all verses 3 before and one after for context
-    context_set = set()
-    for index in index_set:
-        context_set.update(range(index - 3, index + 2))
-
-    # now sort that into a list of "runs" of verses
-    for index in sorted(context_set):
-        print(index, end='')
-        if index in index_set:
-            print(' *', end='')
-        print()
-
-    # Now get the starts and ends of those
-    # https://stackoverflow.com/a/10420670/2958070
-    def make_inclusive_range(g):
-        l = list(g)
-        return l[0], l[-1]
-
-    context_list = sorted(context_set)
-    index_range_gen = (make_inclusive_range(g) for _, g in
-                       groupby(context_list, key=lambda n, c=count(): n - next(c)))
-
-    for index_start, index_end in index_range_gen:
+    for index_start, index_end in make_range_gen(index_set):
         print(index_start, index_end)
 
 
