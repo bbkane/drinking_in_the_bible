@@ -1,7 +1,29 @@
+from pathlib import Path
+import argparse
 import collections
 import json
 import os
 import sys
+
+
+DESCRIPTION = """
+Rate the verses in a JSON file
+"""
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
+    parser.add_argument('-if', '--input_file', nargs='?', type=Path,
+                        default=Path("~/Dropbox/Data/drinking_bible/verse_runs_rated.json"),
+                        help="Input JSON file")
+    parser.add_argument('-of', '--output_file', nargs='?', type=Path,
+                        default=Path("~/Dropbox/Data/drinking_bible/verse_runs_rated.json"),
+                        help="Output JSON file")
+    args = parser.parse_args()
+    # expand args
+    args.input_file = args.input_file.expanduser()
+    args.output_file = args.output_file.expanduser()
+    return args
 
 
 def clear_screen():
@@ -36,9 +58,9 @@ def get_choice():
 
 
 def main():
+    args = parse_args()
 
-    file_name = 'verse_runs_rated.json'
-    with open(file_name, 'r') as verse_runs_file:
+    with args.input_file.open('r') as verse_runs_file:
         verse_runs = json.load(verse_runs_file)
 
     total_runs = len(verse_runs)
@@ -56,7 +78,7 @@ def main():
                 verse_run['rating'] = CHOICES[choice]
                 verse_run['comment'] = comment
 
-    with open('verse_runs_rated.json', 'w') as ratings_file:
+    with args.output_file.open('w') as ratings_file:
         json.dump(verse_runs, ratings_file, indent=4, sort_keys=True)
 
 
