@@ -49,8 +49,8 @@ def main():
             cursor.execute(SQL_VERSES)
             for result in cursor.fetchall():
                 index = result['index']
-                # add 3 verses before and 1 vers after for context
-                index_set.update(range(index - 3, index + 2))
+                # add 3 verses before and 3 verses after for context
+                index_set.update(range(index - 3, index + 4))
 
             verse_runs = []
             for index_start, index_end in make_range_gen(index_set):
