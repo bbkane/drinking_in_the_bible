@@ -30,7 +30,7 @@ def clear_screen():
     # https://stackoverflow.com/a/4810595
     if sys.platform == 'darwin':
         os.system('clear')
-    elif sys.platform == 'windows':  # TODO: text
+    elif sys.platform == 'win32':
         os.system('cls')
 
 
