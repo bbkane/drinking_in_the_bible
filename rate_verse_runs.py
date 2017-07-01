@@ -67,7 +67,8 @@ def main():
     for index, verse_run in enumerate(verse_runs):
         if 'rating' not in verse_run:
             clear_screen()
-            run_header = 'run {} of {}'.format(index + 1, total_runs)
+            percentage = (index + 1) / total_runs * 100
+            run_header = 'run {} of {} - {:0.2f}%'.format(index + 1, total_runs, percentage)
             header = '{book_start} {chapter_start}:{verse_start} to {book_end} {chapter_end}:{verse_end}'.format(**verse_run)
             print(run_header, '\n\n', header, '\n\n', verse_run['verses'])
             choice = get_choice()
