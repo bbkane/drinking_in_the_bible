@@ -53,6 +53,10 @@ def main():
                 index_set.update(range(index - 3, index + 4))
 
             verse_runs = []
+
+            total_verse_runs = 0
+            total_verse_count = 0
+
             for index_start, index_end in make_range_gen(index_set):
                 cursor.execute(SQL_RUNS, (index_start, index_end))
                 result = cursor.fetchall()
@@ -69,11 +73,20 @@ def main():
                 ref['verse_start'] = result[0]['verse']
                 ref['verse_end'] = result[-1]['verse']
                 ref['verses'] = '\n'.join(verse['text'] for verse in result)
+                verse_count = len(result)
+                ref['verse_count'] = verse_count
+
+                total_verse_count += verse_count
+                total_verse_runs += 1
 
                 verse_runs.append(ref)
 
+            final_product = dict(total_verse_count=total_verse_count,
+                                 total_verse_runs=total_verse_runs,
+                                 verse_runs=verse_runs)
+
     with open('verse_runs.json', 'w') as output:
-        json.dump(verse_runs, output, indent=4, sort_keys=True)
+        json.dump(final_product, output, indent=4, sort_keys=True)
 
 
 if __name__ == "__main__":
