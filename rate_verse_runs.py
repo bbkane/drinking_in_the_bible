@@ -28,7 +28,7 @@ def parse_args():
 
 def clear_screen():
     # https://stackoverflow.com/a/4810595
-    if sys.platform == 'darwin':
+    if sys.platform == 'darwin' or sys.platform == 'linux':
         os.system('clear')
     elif sys.platform == 'win32':
         os.system('cls')
@@ -63,14 +63,35 @@ def main():
     with args.input_file.open('r') as verse_runs_file:
         verse_runs = json.load(verse_runs_file)
 
-    total_runs = len(verse_runs)
-    for index, verse_run in enumerate(verse_runs):
+    total_verse_runs = verse_runs['total_verse_runs']
+    total_verse_count = verse_runs['total_verse_count']
+
+    total_verses_so_far = 0
+
+    for index, verse_run in enumerate(verse_runs['verse_runs']):
+
+        total_verses_so_far += verse_run['verse_count']
+
         if 'rating' not in verse_run:
             clear_screen()
-            percentage = (index + 1) / total_runs * 100
-            run_header = 'run {} of {} - {:0.2f}%'.format(index + 1, total_runs, percentage)
-            header = '{book_start} {chapter_start}:{verse_start} to {book_end} {chapter_end}:{verse_end}'.format(**verse_run)
-            print(run_header, '\n\n', header, '\n\n', verse_run['verses'])
+
+            percentage = (index + 1) / total_verse_runs * 100
+            run_header = 'run {} of {} - {:0.2f}%'.format(index + 1, total_verse_runs, percentage)
+
+            verse_total_percent = total_verses_so_far / total_verse_count * 100
+            verse_total_header = f'verses {total_verses_so_far} of {total_verse_count} - {verse_total_percent:0.2f}%'
+
+            book_end = verse_run['book_end']
+            book_start = verse_run['book_start']
+            chapter_end = verse_run['chapter_end']
+            chapter_start = verse_run['chapter_start']
+            verse_count = verse_run['verse_count']
+            verse_end = verse_run['verse_end']
+            verse_start = verse_run['verse_start']
+
+            header = f'{book_start} {chapter_start}:{verse_start} to {book_end} {chapter_end}:{verse_end}'
+
+            print(run_header, verse_total_header, header, verse_run['verses'], sep='\n\n')
             choice = get_choice()
             if choice == 'q':
                 break
