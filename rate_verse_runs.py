@@ -76,10 +76,12 @@ def main():
             clear_screen()
 
             percentage = (index + 1) / total_verse_runs * 100
-            run_header = 'run {} of {} - {:0.2f}%'.format(index + 1, total_verse_runs, percentage)
+            runs_left = total_verse_runs - (index + 1)
+            run_header = f'run {index + 1} of {total_verse_runs} - {percentage:0.2f}% - {runs_left} runs left'
 
             verse_total_percent = total_verses_so_far / total_verse_count * 100
-            verse_total_header = f'verses {total_verses_so_far} of {total_verse_count} - {verse_total_percent:0.2f}%'
+            total_verses_left = total_verse_count - total_verses_so_far
+            verse_total_header = f'verses {total_verses_so_far} of {total_verse_count} - {verse_total_percent:0.2f}% - {total_verses_left} verses left'
 
             book_end = verse_run['book_end']
             book_start = verse_run['book_start']
